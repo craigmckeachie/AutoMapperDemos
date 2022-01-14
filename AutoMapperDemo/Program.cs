@@ -15,6 +15,8 @@ namespace AutoMapperDemo
 
     class Person
     {
+
+        public int Id { get; set; }
         public Title Title { get; set; }
 
         public string Name { get; set; }
@@ -35,8 +37,9 @@ namespace AutoMapperDemo
 
     class WeddingViewModel
     {
+
         public DateTime Date { get; set; }
-        //public int Id { get; set; }
+        public int BrideId { get; set; }
 
         public string BrideTitle { get; set; }
 
@@ -44,11 +47,16 @@ namespace AutoMapperDemo
 
         public string BrideAddressLine1 { get; set; }
 
+        public int GroomId { get; set; }
+
         public string GroomTitle { get; set; }
 
         public string GroomName { get; set; }
 
         public string GroomAddressLine1 { get; set; }
+
+        public string Command { get; set; }
+
     }
 
 
@@ -60,7 +68,16 @@ namespace AutoMapperDemo
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Wedding, WeddingViewModel>();
+                cfg.CreateMap<Wedding, WeddingViewModel>().ForMember(dest => dest.Command, opt => opt.Ignore());
+                cfg.CreateMap<WeddingViewModel, Wedding>()
+                .ForPath(dest => dest.Bride.Id, opt => opt.MapFrom(src => src.BrideId))
+                .ForPath(dest => dest.Bride.Name, opt => opt.MapFrom(src => src.BrideName))
+                .ForPath(dest => dest.Bride.Title, opt => opt.MapFrom(src => src.BrideTitle))
+                .ForPath(dest => dest.Bride.Address, opt => opt.MapFrom(src => src.BrideAddressLine1))
+                .ForPath(dest => dest.Groom.Id, opt => opt.MapFrom(src => src.GroomId))
+                .ForPath(dest => dest.Groom.Name, opt => opt.MapFrom(src => src.GroomName))
+                .ForPath(dest => dest.Groom.Title, opt => opt.MapFrom(src => src.GroomTitle))
+                .ForPath(dest => dest.Groom.Address, opt => opt.MapFrom(src => src.GroomAddressLine1));
             });
          
 
@@ -75,6 +92,7 @@ namespace AutoMapperDemo
 
             Person bride = new Person
             {
+                Id = 1,
                 Name = "Beyonce",
                 Title = Title.Mrs,
                 Address = new Address { Line1 = "123 Manhattan Ave" }
