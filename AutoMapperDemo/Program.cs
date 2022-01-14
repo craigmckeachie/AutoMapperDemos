@@ -6,6 +6,9 @@ using System.Diagnostics;
 namespace AutoMapperDemo
 {
 
+   
+
+
     class Wedding
     {
         public DateTime Date { get; set; }
@@ -27,7 +30,7 @@ namespace AutoMapperDemo
         public string Name { get; set; }
 
         public Address Address { get; set; }
-       
+
     }
 
     class Address
@@ -62,7 +65,7 @@ namespace AutoMapperDemo
         public string GroomAddressLine1 { get; set; }
 
         public string Command { get; set; }
-        
+
 
     }
 
@@ -70,7 +73,24 @@ namespace AutoMapperDemo
     class Program
     {
 
- 
+        private static void WriteOutJson(string rawString)
+        {
+
+            rawString = rawString.Replace("\"", ""); //remove quotes
+            rawString = rawString.Replace("{", "");
+            rawString = rawString.Replace("}", "");
+            //break each element into a new row
+            var split1 = rawString.Split(',');
+            foreach (var row in split1)
+            {
+
+                //break each property and separate the two into defined columns
+                var split2 = row.Split(':');
+                Console.WriteLine($"{split2[0],-20} {split2[1]}");
+            }
+            Console.WriteLine(); //skip a line after printing
+        }
+
         static void Main(string[] args)
         {
             var config = new MapperConfiguration(cfg =>
@@ -92,7 +112,7 @@ namespace AutoMapperDemo
                 //.ForPath(dest => dest.Groom.Title, opt => opt.MapFrom(src => src.GroomTitle))
                 //.ForPath(dest => dest.Groom.Address.Line1, opt => opt.MapFrom(src => src.GroomAddressLine1));
             });
-         
+
 
             try
             {
@@ -124,12 +144,20 @@ namespace AutoMapperDemo
 
 
             var weddingViewModel = mapper.Map<WeddingViewModel>(wedding);
-            
-            Console.WriteLine(JsonConvert.SerializeObject(weddingViewModel));
+
+
+            Console.WriteLine("Writing out weddingViewModel");
+            WriteOutJson(JsonConvert.SerializeObject(weddingViewModel));
             weddingViewModel.BrideTitle = "Mr";
-            
             var mappedWedding = mapper.Map<Wedding>(weddingViewModel);
-            Console.WriteLine(JsonConvert.SerializeObject(mappedWedding));
+            Console.WriteLine("Writing out mappedWedding");
+            WriteOutJson(JsonConvert.SerializeObject(mappedWedding));
+
+            //Console.WriteLine(JsonConvert.SerializeObject(weddingViewModel));
+            //weddingViewModel.BrideTitle = "Mr";
+
+            //var mappedWedding = mapper.Map<Wedding>(weddingViewModel);
+            //Console.WriteLine(JsonConvert.SerializeObject(mappedWedding));
 
 
             Console.WriteLine("End");
