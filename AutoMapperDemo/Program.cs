@@ -73,11 +73,11 @@ namespace AutoMapperDemo
                 .ForPath(dest => dest.Bride.Id, opt => opt.MapFrom(src => src.BrideId))
                 .ForPath(dest => dest.Bride.Name, opt => opt.MapFrom(src => src.BrideName))
                 .ForPath(dest => dest.Bride.Title, opt => opt.MapFrom(src => src.BrideTitle))
-                .ForPath(dest => dest.Bride.Address, opt => opt.MapFrom(src => src.BrideAddressLine1))
+                .ForPath(dest => dest.Bride.Address.Line1, opt => opt.MapFrom(src => src.BrideAddressLine1))
                 .ForPath(dest => dest.Groom.Id, opt => opt.MapFrom(src => src.GroomId))
                 .ForPath(dest => dest.Groom.Name, opt => opt.MapFrom(src => src.GroomName))
                 .ForPath(dest => dest.Groom.Title, opt => opt.MapFrom(src => src.GroomTitle))
-                .ForPath(dest => dest.Groom.Address, opt => opt.MapFrom(src => src.GroomAddressLine1));
+                .ForPath(dest => dest.Groom.Address.Line1, opt => opt.MapFrom(src => src.GroomAddressLine1));
             });
          
 
@@ -100,6 +100,7 @@ namespace AutoMapperDemo
 
             Person groom = new Person
             {
+                Id = 2,
                 Name = "Sean Carter",
                 Title = Title.Mr,
                 Address = new Address { Line1 = "123 Manhattan Ave" }
@@ -111,6 +112,7 @@ namespace AutoMapperDemo
 
 
             var weddingViewModel = mapper.Map<WeddingViewModel>(wedding);
+            var mappedWedding = mapper.Map<Wedding>(weddingViewModel);
 
 
             Console.WriteLine("End");
