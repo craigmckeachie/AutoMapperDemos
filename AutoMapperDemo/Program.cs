@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 
 namespace AutoMapperDemo
 {
@@ -11,6 +13,9 @@ namespace AutoMapperDemo
         public Person Bride { get; set; }
 
         public Person Groom { get; set; }
+
+        public string JimmysMom { get; set; }
+
     }
 
     class Person
@@ -22,6 +27,7 @@ namespace AutoMapperDemo
         public string Name { get; set; }
 
         public Address Address { get; set; }
+       
     }
 
     class Address
@@ -56,6 +62,7 @@ namespace AutoMapperDemo
         public string GroomAddressLine1 { get; set; }
 
         public string Command { get; set; }
+        
 
     }
 
@@ -68,16 +75,22 @@ namespace AutoMapperDemo
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Wedding, WeddingViewModel>().ForMember(dest => dest.Command, opt => opt.Ignore());
-                cfg.CreateMap<WeddingViewModel, Wedding>()
-                .ForPath(dest => dest.Bride.Id, opt => opt.MapFrom(src => src.BrideId))
-                .ForPath(dest => dest.Bride.Name, opt => opt.MapFrom(src => src.BrideName))
-                .ForPath(dest => dest.Bride.Title, opt => opt.MapFrom(src => src.BrideTitle))
-                .ForPath(dest => dest.Bride.Address.Line1, opt => opt.MapFrom(src => src.BrideAddressLine1))
-                .ForPath(dest => dest.Groom.Id, opt => opt.MapFrom(src => src.GroomId))
-                .ForPath(dest => dest.Groom.Name, opt => opt.MapFrom(src => src.GroomName))
-                .ForPath(dest => dest.Groom.Title, opt => opt.MapFrom(src => src.GroomTitle))
-                .ForPath(dest => dest.Groom.Address.Line1, opt => opt.MapFrom(src => src.GroomAddressLine1));
+                var toUIMap = cfg.CreateMap<Wedding, WeddingViewModel>().ForMember(dest => dest.Command, opt => opt.Ignore());
+                var toDALMap = toUIMap.ReverseMap();
+
+                toDALMap.ForPath(d => d.JimmysMom, opt => opt.Ignore());
+
+
+
+                // cfg.CreateMap<WeddingViewModel, Wedding>();
+                //.ForPath(dest => dest.Bride.Id, opt => opt.MapFrom(src => src.BrideId))
+                //.ForPath(dest => dest.Bride.Name, opt => opt.MapFrom(src => src.BrideName))
+                //.ForPath(dest => dest.Bride.Title, opt => opt.MapFrom(src => src.BrideTitle))
+                //.ForPath(dest => dest.Bride.Address.Line1, opt => opt.MapFrom(src => src.BrideAddressLine1))
+                //.ForPath(dest => dest.Groom.Id, opt => opt.MapFrom(src => src.GroomId))
+                //.ForPath(dest => dest.Groom.Name, opt => opt.MapFrom(src => src.GroomName))
+                //.ForPath(dest => dest.Groom.Title, opt => opt.MapFrom(src => src.GroomTitle))
+                //.ForPath(dest => dest.Groom.Address.Line1, opt => opt.MapFrom(src => src.GroomAddressLine1));
             });
          
 
@@ -102,7 +115,6 @@ namespace AutoMapperDemo
             {
                 Id = 2,
                 Name = "Sean Carter",
-                Title = Title.Mr,
                 Address = new Address { Line1 = "123 Manhattan Ave" }
             };
 
@@ -112,7 +124,12 @@ namespace AutoMapperDemo
 
 
             var weddingViewModel = mapper.Map<WeddingViewModel>(wedding);
+            
+            Console.WriteLine(JsonConvert.SerializeObject(weddingViewModel));
+            weddingViewModel.BrideTitle = "Mr";
+            
             var mappedWedding = mapper.Map<Wedding>(weddingViewModel);
+            Console.WriteLine(JsonConvert.SerializeObject(mappedWedding));
 
 
             Console.WriteLine("End");
